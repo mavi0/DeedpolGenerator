@@ -16,7 +16,6 @@ def number_date(date):
     month = date.strftime("%m")
     year = date.strftime("%Y")
     return str(day) + "/" + str(month) + "/" + str(year)
-    # return date.strftime("%x")
 
 def word_date(date):
     day = int(date.strftime("%d"))
@@ -63,22 +62,16 @@ def generate_deedpol(oldName, newName, streetAddress, city, county, postcode, da
     pdfl = PDFLaTeX.from_texfile('tex/%s.tex' % uid)
     pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=False)
     move_pdf()
+    os.remove("tex/%s.tex" % uid)
 
-
-
-
-
-@app.route('/success/<uid>')
-def success(uid):
-    # with open('pdf/%s.pdf' % uid, 'rb') as static_file:
+@app.route('/deedpol/<uid>')
+def deedpol(uid):
     return send_file('pdf/%s.pdf' % uid, attachment_filename='deedpol.pdf')
 
-# def success(name):
-#     return 'welcome %s' % name
 
 
 @app.route('/generate', methods=['POST', 'GET'])
-def login():
+def generate():
     oldName = request.form['oldName'].upper()
     newName = request.form['newName'].upper()
     streetAddress = request.form['streetAddress'].capitalize()
@@ -89,11 +82,7 @@ def login():
     uid = str(uuid.uuid4())
 
     generate_deedpol(oldName, newName, streetAddress, city, county, postcode, date, uid)
-    return redirect(url_for('success',uid = uid))
-#    else:
-#       user = request.args.get('nm')
-#       return redirect(url_for('success',name = user))
-
+    return redirect(url_for('deedpol',uid = uid))
 
 @app.route('/')
 def index():
