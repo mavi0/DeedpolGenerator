@@ -70,8 +70,8 @@ def generate_deedpol(oldName, newName, streetAddress, city, county, postcode, da
 
 @app.route('/success/<uid>')
 def success(uid):
-    with open('pdf/%s.pdf' % uid, 'rb') as static_file:
-        return send_file(static_file, attachment_filename='Deedpol.pdf')
+    # with open('pdf/%s.pdf' % uid, 'rb') as static_file:
+    return send_file('pdf/%s.pdf' % uid, attachment_filename='deedpol.pdf')
 
 # def success(name):
 #     return 'welcome %s' % name
