@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+        <title>Deedpol Generator</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1"/> 
+        <meta name="viewport" content="width=device-width" />
+        <style>
+
+            @import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed&display=swap');
+
+            ::-moz-selection {
+                background: #b3d4fc;
+                text-shadow: none;
+            }
+
+            ::selection {
+                background: #b3d4fc;
+                text-shadow: none;
+            }
+
+            html {
+                padding: 30px 10px;
+                font-size: 20px;
+                line-height: 1.4;
+                color: #737373;
+                background: #ecf0f1;
+            }
+
+            html {
+                padding: 30px 10px;
+                font-size: 20px;
+                color: #737373;
+                background: #ecf0f1;
+            }
+
+            body {
+                max-width: 500px;
+                _width: 500px;
+                padding: 30px 20px 50px;
+                border: 1px solid #b3b3b3;
+                border-radius: 4px;
+                margin: 0 auto;
+                box-shadow: 0 1px 10px #a7a7a7, inset 0 1px 0 #fff;
+                background: #fcfcfc;
+            }
+
+            h1 {
+                margin: 0 10px;
+                font-size: 50px;
+                text-align: center;
+                font-family: 'Roboto Condensed', sans-serif;
+            }
+
+            h3 {
+                margin: 1.5em 0 0.5em;
+            }
+
+            p {
+                margin: 1em 0;
+                font-family: 'Roboto', sans-serif;
+                text-align: left;
+                font-size: 20px;
+            }
+
+            ul {
+                padding: 0 0 0 40px;
+                margin: 1em 0;
+            }
+
+            a {
+                text-align: center;
+                color: #d64937;
+            }
+
+            a:hover{
+                color: #bbb;
+            }
+
+            .container {
+                max-width: 400px;
+                _width: 380px;
+                margin: 0 auto;
+            }
+
+            #subjectDetails {
+                font-family: 'Roboto', sans-serif;
+                text-align: left;
+                font-size: 20px;
+            }
+
+        </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <div class="container">
+      <h1>Deedpol Generator</h1>
+      <p>Enter your details and press generate to create your deedpol</p>
+      <!-- <form id="subjectDetails"  onsubmit="return loadVars()"> -->
+      <form id="subjectDetails" action = "http://localhost:5000/generate" method = "post">
+          Old name: <br><input type="text" id="oldName" required><br>
+          New name: <br><input type="text" id="newName" required><br>
+          Street Address: <br><input type="text" id="streetAddress" required><br>
+          City: <br><input type="text" id="city" required><br>
+          County: <br><input type="text" id="county" required><br>
+          Postcode: <br><input type="text" id="postcode" required><br>
+          Date: <br><input type="date" id="date" required><br>
+        <input type="submit" value="Submit" id="submit">
+      </form>
+    </div>
+    <!-- <script>
+
+        var parseTextDate = function(date) {
+            // alert(date)
+            var month = date.getMonth();
+            var day = String(date.getDate());
+            const year = String(date.getFullYear());
+
+            var suffix = "th";
+            var textMonth = ""
+
+            if (day == 1 || day == 21 || day == 31) suffix = "st";
+            if (day == 2 || day == 22) suffix = "nd";
+            if (day == 3 || day == 23) suffix = "rd";
+            
+            switch (month) {
+                case 0:
+                    textMonth = "January";
+                    break;
+                case 1:
+                    textMonth = "February";
+                    break;
+                case 2:
+                    textMonth = "March";
+                    break;
+                case 3:
+                    textMonth = "April";
+                    break;
+                case 4:
+                    textMonth = "May";
+                    break;
+                case 5:
+                    textMonth = "June";
+                    break;
+                case 6:
+                    textMonth = "July";
+                    break;
+                case 7: 
+                    textMonth = "August";
+                    break;
+                case 8:
+                    textMonth = "September";
+                    break;
+                case 9:
+                    textMonth = "October";
+                    break;
+                case 10:
+                    textMonth = "November";
+                    break;
+                case 11:
+                    textMonth = "December";
+            }
+
+            return `${day}${suffix} day of ${textMonth} in the year ${year}`;
+        }
+    
+        var parseDate = function(date) {
+            // alert(date)
+            var month = String(date.getMonth() + 1);
+            var day = String(date.getDate());
+            const year = String(date.getFullYear());
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return `${day}/${month}/${year}`;
+        }
+
+        var generateLatex = function(oldName, newName, streetAddress, county, city, postCode, numberDate, textDate) {
+            var latexVars = `\\newcommand{\\newname}{${newName}}\n` +
+                            `\\newcommand{\\oldname}{${oldName}}\n` +
+                            `\\newcommand{\\streetaddress}{${streetAddress}}\n` +
+                            `\\newcommand{\\city}{${city}}\n` +
+                            `\\newcommand{\\postcode}{${postCode}}\n` +
+                            `\\newcommand{\\county}{${county}}\n` +
+                            `\\newcommand{\\worddate}{${textDate}}\n` +
+                            `\\newcommand{\\numberdate}{${numberDate}}\n`;        
+
+            var latexCode = "";
+            var client = new XMLHttpRequest();
+            client.open('GET', 'https://raw.githubusercontent.com/mavi0/deedpol-template/master/main.tex', false);
+            client.send(null);
+            if (client.status === 200) {
+                latexCode = client.responseText;
+            }
+            var latexConcat = "";
+            latexConcat += latexVars;
+            latexConcat += latexCode;
+            console.log(latexConcat);
+            return latexConcat;
+        }
+
+      
+        function loadVars(){
+            var oldName = document.getElementById("oldName").value.toUpperCase();
+            var newName = document.getElementById("newName").value.toUpperCase();
+            var streetAddress = document.getElementById("streetAddress").value;
+            var county = document.getElementById("county").value;
+            var date = new Date(document.getElementById("date").value);
+            var postCode = document.getElementById("postcode").value;
+            var city = document.getElementById("city").value;
+
+            var numberDate = parseDate(date);
+            var textDate = parseTextDate(date);
+            var latexCode = generateLatex(oldName, newName, streetAddress, county, city, postCode, numberDate, textDate);
+        }
+    </script> -->
+
+  </body>
+</html>
