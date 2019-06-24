@@ -66,8 +66,10 @@ def generate_deedpol(oldName, newName, streetAddress, city, county, postcode, da
 
 @app.route('/deedpol/<uid>')
 def deedpol(uid):
-    return send_file('pdf/%s.pdf' % uid, attachment_filename='deedpol.pdf')
-
+    try:
+        return send_file('pdf/%s.pdf' % uid, attachment_filename='deedpol.pdf')
+    finally:
+        os.remove("pdf/%s.pdf" % uid)
 
 
 @app.route('/generate', methods=['POST', 'GET'])
