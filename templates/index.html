@@ -88,6 +88,12 @@
             text-align: left;
             font-size: 20px;
         }
+
+        .input {
+            width: 100%;
+        }
+
+
     </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
@@ -98,16 +104,19 @@
         <h1>Deedpol Generator</h1>
         <p>Enter your details and press generate to create your deedpol</p>
         <form id="subjectDetails" method="post">
-            Old name: <br><input type="text" name="oldName" required><br>
-            New name: <br><input type="text" name="newName" required><br>
-            Street Address: <br><input type="text" name="streetAddress" required><br>
-            City: <br><input type="text" name="city" required><br>
-            County: <br><input type="text" name="county" required><br>
-            Postcode: <br><input type="text" name="postcode" required><br>
-            Date: <br><input type="date" name="date" required><br>
+            Old name: <br><input type="text" name="oldName" class="input" required><br>
+            New name: <br><input type="text" name="newName" class="input" required><br>
+            Street Address: <br><input type="text" name="streetAddress" class="input" required><br>
+            City: <br><input type="text" name="city" class="input" required><br>
+            County: <br><input type="text" name="county" class="input" required><br>
+            Postcode: <br><input type="text" name="postcode" class="input" required><br>
+            Date: <br><input type="date" name="date" class="input" required><br><br>
             <input type="submit" value="Submit" name="submit">
         </form>
+        <br>
+        <div class="github-card" data-github="mavi0/DeedpolGenerator" data-width="400" data-height="153" data-theme="default"></div>
     </div>
+    <script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
 </body>
 
 </html>
