@@ -1,93 +1,84 @@
-from flask import Flask, redirect, url_for, request, render_template, send_file
-from pdflatex import PDFLaTeX
+# from pdflatex import PDFLaTeX
+from latex import build_pdf
 import requests, datetime, shutil, os, glob, uuid
 
-app = Flask(__name__)
+class DeedpolGenerator():
+    def __init__(self, old_name, new_name, street_address, city, county, postcode, date):
+        self.__uuid = str(uuid.uuid4())
+        self.__old_name = old_name.upper()
+        self.__new_name = new_name.upper()
+        self.__street_address = street_address.capitalize()
+        self.__city = city.capitalize()
+        self.__county = county.capitalize()
+        self.__postcode = postcode.upper()
+        self.__date = self.__parse_date(date)
 
-def get_latex(url):
-    latexRequest = requests.get(url)
-    return latexRequest.text
+    def __get_latex(self, url):
+        latex_request = requests.get(url)
+        return latex_request.text
 
-def parse_date(date):
-    return datetime.datetime.strptime(date, "%Y-%m-%d").date()
+    def __parse_date(self, date):
+        return datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
-def number_date(date):
-    day = date.strftime("%d")
-    month = date.strftime("%m")
-    year = date.strftime("%Y")
-    return str(day) + "/" + str(month) + "/" + str(year)
+    def __number_date(self):
+        day = self.__date.strftime("%d")
+        month = self.__date.strftime("%m")
+        year = self.__date.strftime("%Y")
+        return str(day) + "/" + str(month) + "/" + str(year)
 
-def word_date(date):
-    day = int(date.strftime("%d"))
-    year = date.strftime("%Y")
+    def __word_date(self):
+        day = int(self.__date.strftime("%d"))
+        year = self.__date.strftime("%Y")
 
-    suffix = "th"
+        suffix = "th"
 
-    if (day == 1 or day == 21 or day == 31):
-        suffix = "st"
-    if (day == 2 or day == 22):
-        suffix = "nd"
-    if (day == 3 or day == 23):
-        suffix = "rd"
+        if (day == 1 or day == 21 or day == 31):
+            suffix = "st"
+        if (day == 2 or day == 22):
+            suffix = "nd"
+        if (day == 3 or day == 23):
+            suffix = "rd"
 
-    wDate = str(day) + suffix + " day of " + date.strftime("%B") + " in the year " +  str(year) 
+        w_date = str(day) + suffix + " day of " + self.__date.strftime("%B") + " in the year " +  str(year) 
 
-    return wDate   
+        return w_date   
 
-def generate_latex_vars(oldName, newName, streetAddress, city, county, postcode, numberDate, wordDate):
-    latexVars = "\\newcommand{\\newname}{" + newName + "}\n" + "\\newcommand{\\oldname}{" + oldName + "}\n" + "\\newcommand{\\streetaddress}{" + streetAddress + "}\n" + "\\newcommand{\\city}{" + city + "}\n" + "\\newcommand{\\postcode}{" + postcode + "}\n" + "\\newcommand{\\county}{" + county + "}\n" + "\\newcommand{\\worddate}{" + wordDate + "}\n" + "\\newcommand{\\numberdate}{" + numberDate + "}\n"
-    return latexVars
+    def __generate_latex_vars(self):
+        latex_vars = "\\newcommand{\\newname}{" + self.__new_name + "}\n" + "\\newcommand{\\oldname}{" + self.__old_name + "}\n" + "\\newcommand{\\streetaddress}{" + self.__street_address + "}\n" + "\\newcommand{\\city}{" + self.__city + "}\n" + "\\newcommand{\\postcode}{" + self.__postcode + "}\n" + "\\newcommand{\\county}{" + self.__county + "}\n" + "\\newcommand{\\worddate}{" + self.__word_date() + "}\n" + "\\newcommand{\\numberdate}{" + self.__number_date() + "}\n"
+        return latex_vars
 
-def generate_latex(oldName, newName, streetAddress, city, county, postcode, date, uid):
-    baseLatex = get_latex("https://raw.githubusercontent.com/mavi0/deedpol-template/master/main.tex")
-    date = parse_date(date)
-    numberDate = number_date(date)
-    wordDate = word_date(date)
-    latexVars = generate_latex_vars(oldName, newName, streetAddress, city, county, postcode, numberDate, wordDate)
-    latex = latexVars + baseLatex
-    with open("tex/%s.tex" % uid, "w") as tex:
-        tex.write("%s" % latex)
+    def __generate_latex(self, base_latex):
+        latex_vars = self.__generate_latex_vars()
+        latex = latex_vars + base_latex
+        with open("tex/%s.tex" % self.__uuid, "w") as tex:
+            tex.write("%s" % latex)
 
-def move_pdf():
-    sourceDir = '.'
-    dstDir = 'pdf/'
-    files = glob.iglob(os.path.join(sourceDir, "*.pdf"))
-    for file in files:
-        if os.path.isfile(file):
-            shutil.move(file, dstDir)
+    # def __move_pdf(self):
+    #     sourceDir = '/deedpol'
+    #     dstDir = 'pdf/'
+    #     files = glob.iglob(os.path.join(sourceDir, "*.pdf"))
+    #     for file in files:
+    #         if os.path.isfile(file):
+    #             shutil.move(file, dstDir)
+    
+    def get_uuid(self):
+        return self.__uuid
 
+    def __generate_deedpol(self, base_latex):
+        self.__generate_latex(base_latex)
+        try:
+            os.system('pdflatex tex/%s.tex' % self.__uuid)
+        except:
+            print("pdf error")
+        os.remove("tex/%s.tex" % self.__uuid)
+        os.remove("%s.aux" % self.__uuid)
+        os.remove("%s.log" % self.__uuid)
+        os.remove("%s.out" % self.__uuid)
 
-def generate_deedpol(oldName, newName, streetAddress, city, county, postcode, date, uid):
-    generate_latex(oldName, newName, streetAddress, city, county, postcode, date, uid)
-    pdfl = PDFLaTeX.from_texfile('tex/%s.tex' % uid)
-    pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=False)
-    move_pdf()
-    os.remove("tex/%s.tex" % uid)
-
-@app.route('/deedpol/<uid>')
-def deedpol(uid):
-    try:
-        return send_file('pdf/%s.pdf' % uid, attachment_filename='deedpol.pdf')
-    finally:
-        os.remove("pdf/%s.pdf" % uid)
-
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    if request.method == 'POST':
-        oldName = request.form['oldName'].upper()
-        newName = request.form['newName'].upper()
-        streetAddress = request.form['streetAddress'].capitalize()
-        city = request.form['city'].capitalize()
-        county = request.form['county'].capitalize()
-        postcode = request.form['postcode'].upper()
-        date = request.form['date']
-        uid = str(uuid.uuid4())
-
-        generate_deedpol(oldName, newName, streetAddress, city, county, postcode, date, uid)
-        return redirect(url_for('deedpol',uid = uid))
-
-    else:
-        return render_template('index.html')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    def generate_deedpol_witness_2(self):
+        base_latex = self.__get_latex("https://raw.githubusercontent.com/mavi0/deedpol-template/master/main.tex")
+        self.__generate_deedpol(base_latex)
+    
+    def generate_deedpol_witness_1(self):
+        base_latex = self.__get_latex("https://raw.githubusercontent.com/mavi0/deedpol-template/master/one.tex")
+        self.__generate_deedpol(base_latex)

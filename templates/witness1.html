@@ -7,6 +7,7 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/bootstrap.css') }}">
+
     <style>
         @import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed&display=swap');
 
@@ -57,10 +58,23 @@
             margin: 1.5em 0 0.5em;
         }
 
+        .btn-primary:hover {
+            background-color: #37c4d6;
+            border-color: #37c4d6;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: #d64937;
+            border-color: #d64937;
+            width: 100%;
+        }
+
+
         p {
             margin: 1em 0;
             font-family: 'Roboto', sans-serif;
-            text-align: justify;
+            text-align: left;
             font-size: 20px;
         }
 
@@ -72,18 +86,6 @@
         a {
             text-align: center;
             color: #d64937;
-        }
-
-        .btn-primary:hover {
-            background-color: #37c4d6;
-            border-color: #37c4d6;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background-color: #d64937;
-            border-color: #d64937;
-            width: 100%;
         }
 
         a:hover {
@@ -115,20 +117,19 @@
 
     <div class="container">
         <h1>Deed Poll Generator</h1>
-        <p>Please choose a template:</p>
-        <p>
-            <a href="/witness1"><button class="btn btn-primary witness">One Witness</button></a>
-            <br>
-            <br>
-            <a href="/witness2"><button class="btn btn-primary witness">Two Witnesses</button></a>
-        </p>
-
-        <p>There are two options to generate your deed poll - either one witness or two witnesses. There is no legal requirement for more than one witness, it is only required in niche cases.</p> 
-        <p>A witness must be someone who you know personally, who is not related to you, who you have known for at least 2 years and does not live at the same address as you.</p>
-        <p>If you are transgender and wish to use this service to create a deed poll, should you use a Gender Identiry Clinic service they will use the date on the deed poll as the start date of "Real Life Experience". The GIC is one of the only institutions who will require two witnesses. A title is simply an honorific and there is no legal process to change it, however companies and government agancies are required under the <a href="https://www.legislation.gov.uk/ukpga/2010/15/contents">Equality Act (2010)</a> and <a href="https://gdpr-info.eu/">GDPR</a> to update your title on request. </p>
-        <div class="github-card" data-github="mavi0/DeedpolGenerator" data-width="400" data-height="153" data-theme="default"></div>
+        <p>Enter your details and press generate to create your deed poll</p>
+        <form id="subjectDetails" method="post">
+            Old name: <br><input type="text" name="oldName" class="input" required><br>
+            New name: <br><input type="text" name="newName" class="input" required><br>
+            Street Address: <br><input type="text" name="streetAddress" class="input" required><br>
+            City: <br><input type="text" name="city" class="input" required><br>
+            County: <br><input type="text" name="county" class="input" required><br>
+            Postcode: <br><input type="text" name="postcode" class="input" required><br>
+            Date: <br><input type="date" name="date" class="input" required><br><br>
+            <input class="btn btn-primary" type="submit" value="Submit">        
+        </form>
+        <br>
     </div>
-    <script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
 </body>
 
 </html>
