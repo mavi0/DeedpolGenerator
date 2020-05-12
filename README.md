@@ -1,6 +1,6 @@
 # A Deedpol Generator Written in Python Flask
 
-The site live [here](http://deedpol.mavieson.co.uk/)
+The site live [here](http://deedpoll.mavieson.co.uk/)
 
 Prerequisites: [docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
