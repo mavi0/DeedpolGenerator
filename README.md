@@ -1,4 +1,4 @@
-# A Deedpol Generator Written in Python Flask
+# A Deed Poll Generator Written in Python Flask
 
 The site live [here](http://deedpoll.mavieson.co.uk/)
 
@@ -10,6 +10,39 @@ To run:
 docker pull mavi0/deedpolgenerator
 docker run --name deedpolgenerator -d -p 5000:5000 mavi0/deedpolgenerator:latest
 ```
+
+Docker compose with traefik
+```yaml
+deedpol:
+    image: mavi0/deedpolgenerator:latest
+    container_name: deedpol
+    networks:
+      - traefik-network
+      - default
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.deedpol.entrypoints=web
+      - traefik.http.routers.deedpol-sec.entrypoints=websecure
+      - traefik.http.routers.deedpol.rule=Host(`deedpoll.mavieson.co.uk`)
+      - traefik.http.routers.deedpol-sec.rule=Host(`deedpoll.mavieson.co.uk`)
+      - traefik.http.services.deedpol-sec.loadbalancer.server.port=5000
+      - traefik.http.routers.deedpol.middlewares=basic-http
+      - traefik.http.routers.deedpol-sec.middlewares=basic
+      - traefik.http.routers.deedpol-sec.tls=true
+      - traefik.http.routers.deedpol-sec.tls.certresolver=cfdns
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
+```
+
 Goto [127.0.0.1:5000](http://127.0.0.1:5000)
 
 This project uses Latex files from [this](https://github.com/mavi0/deedpol-template) repo.
